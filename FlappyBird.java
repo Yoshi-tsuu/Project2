@@ -19,6 +19,37 @@ public class FlappyBird extends JPanel {
     int birdWidth = 34;
     int birdHeight = 24;
 
+    class Bird {
+        int x = birdX;
+        int y = birdY;
+        int width = birdWidth;
+        int height = birdHeight;
+        Image img;
+
+        Bird(Image img) {
+            this.img = img;
+        }
+    }
+
+    // pipe class
+    int pipeX = boardWidth;
+    int pipeY = 0;
+    int pipeWidth = 64; // scaled by 1/6
+    int pipeHeight = 512;
+
+    class Pipe {
+        int x = pipeX;
+        int y = pipeY;
+        int width = pipeWidth;
+        int height = pipeHeight;
+        Image img;
+        boolean passed = false;
+
+        Pipe(Image img) {
+            this.img = img;
+        }
+    }
+
     FlappyBird() {
         setPreferredSize(new Dimension(boardWidth, boardHeight));
         //setBackground(Color.blue);
