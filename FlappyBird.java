@@ -14,6 +14,11 @@ public class FlappyBird extends JPanel {
     Image topPipeImg;
     Image bottomPipeImg;
 
+    int birdX = boardWidth / 8;
+    int birdY = boardWidth / 2;
+    int birdWidth = 34;
+    int birdHeight = 24;
+
     FlappyBird() {
         setPreferredSize(new Dimension(boardWidth, boardHeight));
         //setBackground(Color.blue);
