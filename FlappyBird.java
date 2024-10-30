@@ -119,7 +119,6 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
     public void draw(Graphics g) {
         //tło
         g.drawImage(backgroundImg, 0, 0, this.boardWidth, this.boardHeight, null);
-
         if (inMenu) {
             drawMenu(g); // Draw menu jeśli jesteśmy w "menu mode"
         } else {
@@ -132,7 +131,6 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
         g.setColor(Color.white);
         g.setFont(new Font("Arial", Font.BOLD, 48));
         g.drawString("Flappy Bird", 60, 200);
-
         g.setFont(new Font("Arial", Font.PLAIN, 24));
         g.drawString("Press SPACE to start", 60, 300);
     }
@@ -167,17 +165,14 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
         //pipes
         for (Pipe pipe : pipes) {
             pipe.x += velocityX;
-
             if (!pipe.passed && bird.x > pipe.x + pipe.width) {
                 score += 0.5; //0.5 ponieważ są dwie rury a więc 0.5*2 = 1, 1 dla każdego "zestawu" rur
                 pipe.passed = true;
             }
-
             if (collision(bird, pipe)) {
                 gameOver = true;
             }
         }
-
         if (bird.y > boardHeight) {
             gameOver = true;
         }
@@ -196,7 +191,6 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
             move();
             repaint();
         }
-
         if (gameOver) {
             placePipeTimer.stop();
             gameLoop.stop();
