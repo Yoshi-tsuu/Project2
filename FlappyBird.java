@@ -1,36 +1,43 @@
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Random;
-import javax.swing.*;
 
 public class FlappyBird extends JPanel implements ActionListener, KeyListener {
-    int boardWidth = 360;
-    int boardHeight = 640;
+    private int boardWidth = 360;
+    private int boardHeight = 640;
 
-    Image backgroundImg;
-    Image birdImg;
-    Image topPipeImg;
-    Image bottomPipeImg;
+    private Image backgroundImg;
+    private Image birdImg;
+    private Image topPipeImg;
+    private Image bottomPipeImg;
 
-    Bird bird;
-    int velocityX = -4;
-    int velocityY = 0;
-    int gravity = 1;
+    private Bird bird;
+    private int velocityX = -4;
+    private int velocityY = 0;
+    private int gravity = 1;
 
-    ArrayList<Pipe> pipes;
-    Random random = new Random();
+    private ArrayList<Pipe> pipes;
+    private Random random = new Random();
 
-    Timer gameLoop;
-    Timer placePipeTimer;
-    boolean gameOver = false;
-    double score = 0;
-    boolean inMenu = true;
+    private Timer gameLoop;
+    private Timer placePipeTimer;
+    private boolean gameOver = false;
+    private double score = 0;
 
-    FlappyBird() {
+    private boolean inMenu = true;
+    private boolean enterNickname = true;
+    private String nickname = "";
+
+    private RankingManager rankingManager;
+
+    public FlappyBird() {
         setPreferredSize(new Dimension(boardWidth, boardHeight));
         setFocusable(true);
         addKeyListener(this);
+
+        rankingManager = new RankingManager();
 
         backgroundImg = new ImageIcon(getClass().getResource("./flappybirdbg.png")).getImage();
         birdImg = new ImageIcon(getClass().getResource("./flappybird.png")).getImage();
@@ -62,11 +69,21 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
 
     public void draw(Graphics g) {
         g.drawImage(backgroundImg, 0, 0, boardWidth, boardHeight, null);
-        if (inMenu) {
+        if (enterNickname) {
+            drawNicknameEntry(g);
+        } else if (inMenu) {
             drawMenu(g);
         } else {
             drawGame(g);
         }
+    }
+
+    // Ekran wprowadzania nicku
+    public void drawNicknameEntry(Graphics g) {
+        g.setColor(Color.white);
+        g.setFont(new Font("Arial", Font.BOLD, 32));
+        g.drawString("Enter your nickname:", 30, 200);
+        g.drawString(nickname + "_", 30, 250);  // Wyświetlamy nick i podkreślenie jako wskaźnik
     }
 
     public void drawMenu(Graphics g) {
@@ -90,7 +107,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
     }
 
     public void move() {
-        if (inMenu) return;
+        if (inMenu || enterNickname) return;
 
         velocityY += gravity;
         bird.y += velocityY;
@@ -117,11 +134,12 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (!inMenu) {
+        if (!inMenu && !enterNickname) {
             move();
             repaint();
         }
         if (gameOver) {
+            rankingManager.updateScore(nickname, (int) score);
             placePipeTimer.stop();
             gameLoop.stop();
         }
@@ -129,7 +147,22 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+        if (enterNickname) {
+            if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE && !nickname.isEmpty()) {
+                nickname = nickname.substring(0, nickname.length() - 1);
+                repaint();  // Odświeżamy ekran po usunięciu znaku
+            } else if (e.getKeyCode() == KeyEvent.VK_ENTER && !nickname.isEmpty()) {
+                enterNickname = false;
+                inMenu = true;
+                repaint();  // Przejście do menu
+            } else {
+                char keyChar = e.getKeyChar();
+                if (Character.isLetterOrDigit(keyChar) && nickname.length() < 10) {
+                    nickname += keyChar;
+                    repaint();  // Odświeżamy ekran po dodaniu znaku
+                }
+            }
+        } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             if (inMenu) {
                 inMenu = false;
                 gameLoop.start();
